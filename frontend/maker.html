@@ -1,0 +1,277 @@
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>StellarTrain-maker</title>
+  <style>
+    :root {
+  --bg-color: #0e0b16;
+  --card-bg: #1c152b;
+  --accent: #8a2be2;
+  --accent-light: #a96bff;
+  --text-color: #f2f2f2;
+  --input-bg: #2a223d;
+  --border-radius: 12px;
+  --transition: all 0.3s ease;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  margin: 0;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+}
+
+h2 {
+  color: var(--accent-light);
+  text-shadow: 0 0 8px var(--accent);
+  margin-bottom: 20px;
+}
+
+form {
+  background: var(--card-bg);
+  border-radius: var(--border-radius);
+  box-shadow: 0 0 20px rgba(138, 43, 226, 0.3);
+  padding: 25px 40px;
+  width: 100%;
+  max-width: 420px;
+  transition: var(--transition);
+}
+
+form:hover {
+  box-shadow: 0 0 30px rgba(138, 43, 226, 0.5);
+}
+
+label {
+  display: block;
+  margin-top: 15px;
+  font-weight: 500;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="file"] {
+  background-color: var(--input-bg);
+  border: 1px solid var(--accent-light);
+  color: var(--text-color);
+  border-radius: var(--border-radius);
+  width: 100%;
+  padding: 10px;
+  font-size: 15px;
+  margin-top: 5px;
+  transition: var(--transition);
+}
+
+input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 10px var(--accent);
+}
+
+button {
+  margin-top: 20px;
+  width: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--accent-light));
+  border: none;
+  padding: 12px;
+  border-radius: var(--border-radius);
+  color: white;
+  font-weight: 600;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+button:hover {
+  transform: scale(1.03);
+  box-shadow: 0 0 20px var(--accent-light);
+}
+
+pre {
+  background: var(--input-bg);
+  color: var(--accent-light);
+  border-radius: var(--border-radius);
+  padding: 15px;
+  margin-top: 25px;
+  width: 100%;
+  max-width: 420px;
+  overflow-x: auto;
+}
+
+.fade-in {
+  animation: fadeIn 0.6s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+/* ==== NAVBAR ==== */
+nav {
+  width: 100%;
+  background: #1a112a;
+  box-shadow: 0 0 20px rgba(138, 43, 226, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 12px 0;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+nav a {
+  color: #c9b6ff;
+  text-decoration: none;
+  margin: 0 20px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+nav a:hover {
+  color: #ffffff;
+  text-shadow: 0 0 10px var(--accent);
+}
+
+nav a.active::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -5px;
+  transform: translateX(-50%);
+  width: 50%;
+  height: 3px;
+  border-radius: 3px;
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent-light);
+}
+
+
+
+
+
+  </style>
+</head>
+<body>
+  <center><h1>StellarTrain</h1></center>
+  <nav>
+    <a href="/maker" class="active">Maker</a>
+    <a href="/solver">Solver</a>
+    <a href="/leaderboard">Leaderboard</a>
+    <a href="/about">About</a>
+  </nav>
+
+  <h2>⚙️ Create a New Challenge</h2>
+  <form id="makerForm" class="fade-in">
+    <label>Threshold:</label>
+    <input type="number" step="0.01" name="threshold" value="0.9">
+
+    <label>Reward (XLM):</label>
+    <input type="text" name="rewardWei" value="1000">
+    <label>Problem Title:</label>
+    <input type="text" name="title" placeholder="Sample Challenge">
+    <label>Problem Description:</label>
+    <input type="text" name="description" placeholder="Describe the challenge...">
+    <label>Training Dataset:</label>
+    <input type="file" name="file" accept=".csv">
+    <button type="submit">🚀 Create Challenge</button>
+  </form>
+
+  <pre id="resp" class="fade-in">Debugging block </pre>
+  <canvas id="particles"></canvas>
+<script>
+  const canvas = document.getElementById('particles');
+  const ctx = canvas.getContext('2d');
+  let particles = [];
+
+  // Resize canvas to fit window
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resizeCanvas);
+  resizeCanvas();
+
+  // Particle properties
+  for (let i = 0; i < 750; i++) {
+    particles.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      r: Math.random() * 2 + 1,
+      dx: (Math.random() - 0.5) * 0.6,
+      dy: (Math.random() - 0.5) * 0.6
+    });
+  }
+
+  function drawParticles() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#a96bff';
+    for (let p of particles) {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fill();
+      p.x += p.dx;
+      p.y += p.dy;
+
+      // Bounce from edges
+      if (p.x < 0 || p.x > canvas.width) p.dx *= -1;
+      if (p.y < 0 || p.y > canvas.height) p.dy *= -1;
+    }
+
+    // Link close particles
+    ctx.strokeStyle = 'rgba(169, 107, 255, 0.15)';
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 120) {
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.stroke();
+        }
+      }
+    }
+
+    requestAnimationFrame(drawParticles);
+  }
+  drawParticles();
+
+  // Style canvas behind everything
+  canvas.style.position = 'fixed';
+  canvas.style.top = '0';
+  canvas.style.left = '0';
+  canvas.style.zIndex = '-1';
+  canvas.style.opacity = '0.6';
+
+    const form = document.getElementById('makerForm');
+    const resp = document.getElementById('resp');
+
+    form.onsubmit = async (e) => {
+      e.preventDefault();
+      resp.textContent = "⏳ Creating challenge...";
+      const fd = new FormData(e.target);
+      try {
+        const r = await fetch('/create_challenge', {method:'POST', body:fd});
+        const text = await r.text();
+        resp.textContent = text;
+      } catch (err) {
+        resp.textContent = "❌ Error: " + err.message;
+      }
+    };
+  </script>
+    <br>
+  <br>
+  <br>
+  <br>
+  <br>
+  <footer>Developed by TEAM BlockchainWarriors</footer>
+</body>
+</html>
