@@ -159,8 +159,7 @@ Functions:
 
 ## 🧪 Local Development  
 
-### Prerequisites  
-- Node.js ≥ 18  
+### Prerequisites   
 - Python ≥ 3.10  
 - Docker  
 - MetaMask / Freighter Wallet (Testnet)  
@@ -172,16 +171,10 @@ Functions:
 # Clone repo
 git clone https://github.com/<yourusername>/StellarTrain.git
 cd StellarTrain
+cd backend
+python app.py
 ```
 
-**Backend Setup**
-```bash
-cd backend
-python -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-flask run
-```
 
 **Frontend Setup**
 ```bash
@@ -225,6 +218,3 @@ MIT License © 2025 — **StellarTrain Team**
 
 ---
 
-## 🌐 Authors & Credits  
-**Reman Dey** – Project Architect & Lead Developer  
-Built with ❤️ for decentralized ML innovation.  
